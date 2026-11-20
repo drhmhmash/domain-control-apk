@@ -39,3 +39,4 @@ jobs:
         with:
           name: domain-control-apk
           path: bin/*.apk
+# rebuild 1795212771
