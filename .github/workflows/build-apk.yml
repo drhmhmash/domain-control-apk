@@ -28,7 +28,7 @@ jobs:
 
       - name: Install Buildozer and Cython
         run: |
-          pip install --upgrade pip wheel setuptools
+          pip install "pip==24.3.1" wheel setuptools
           pip install "cython>=3.0.11" buildozer
 
       - name: Build APK
