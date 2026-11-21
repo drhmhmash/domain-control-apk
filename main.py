@@ -17,6 +17,28 @@ from kivy.uix.textinput import TextInput
 Window.clearcolor = (0.08, 0.10, 0.14, 1)
 
 
+
+import os
+
+try:
+    import arabic_reshaper
+    from bidi.algorithm import get_display
+    HAS_ARABIC_LIBS = True
+except ImportError:
+    HAS_ARABIC_LIBS = False
+
+ARABIC_FONT = "fonts/arabic.ttf" if os.path.exists("fonts/arabic.ttf") else None
+
+def ar(text):
+    if not isinstance(text, str) or not text:
+        return text
+    if HAS_ARABIC_LIBS:
+        try:
+            return get_display(arabic_reshaper.reshape(text))
+        except Exception:
+            return text
+    return text
+
 class DomainManagerUI(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(orientation="vertical", padding=16, spacing=10, **kwargs)
@@ -27,7 +49,7 @@ class DomainManagerUI(BoxLayout):
             bold=True,
             size_hint_y=None,
             height=45,
-        )
+        , font_name='fonts/arabic.ttf')
         self.add_widget(title)
 
         self.domain_input = TextInput(
@@ -40,10 +62,10 @@ class DomainManagerUI(BoxLayout):
         self.add_widget(self.domain_input)
 
         row1 = BoxLayout(size_hint_y=None, height=48, spacing=8)
-        btn_ip = Button(text="فحص IP الدومين", background_color=(0.15, 0.45, 0.85, 1))
+        btn_ip = Button(text="فحص IP الدومين", background_color=(0.15, 0.45, 0.85, 1), font_name='fonts/arabic.ttf')
         btn_ip.bind(on_press=self.check_ip)
 
-        btn_ssl = Button(text="فحص شهادة SSL", background_color=(0.12, 0.62, 0.42, 1))
+        btn_ssl = Button(text="فحص شهادة SSL", background_color=(0.12, 0.62, 0.42, 1), font_name='fonts/arabic.ttf')
         btn_ssl.bind(on_press=self.check_ssl)
 
         row1.add_widget(btn_ip)
@@ -98,7 +120,7 @@ class DomainManagerUI(BoxLayout):
             size_hint_y=None,
             height=46,
             background_color=(0.85, 0.50, 0.10, 1),
-        )
+        , font_name='fonts/arabic.ttf')
         btn_update_dns.bind(on_press=self.update_cloudflare_dns)
 
         self.panel_url = TextInput(
@@ -113,7 +135,7 @@ class DomainManagerUI(BoxLayout):
             size_hint_y=None,
             height=46,
             background_color=(0.35, 0.25, 0.75, 1),
-        )
+        , font_name='fonts/arabic.ttf')
         btn_open_panel.bind(on_press=self.open_panel)
 
         self.add_widget(self.zone_id)
@@ -132,7 +154,7 @@ class DomainManagerUI(BoxLayout):
             halign="left",
             valign="top",
             size_hint_y=None,
-        )
+        , font_name='fonts/arabic.ttf')
         self.output_label.bind(
             texture_size=lambda instance, value: setattr(instance, "height", value[1] + 20),
             width=lambda instance, value: setattr(instance, "text_size", (value, None)),
@@ -141,7 +163,7 @@ class DomainManagerUI(BoxLayout):
         self.add_widget(scroll)
 
     def set_result(self, text):
-        Clock.schedule_once(lambda dt: setattr(self.output_label, "text", text))
+        Clock.schedule_once(lambda dt: setattr(self.output_label, "text", ar(text)))
 
     def check_ip(self, instance):
         domain = self.domain_input.text.strip()
